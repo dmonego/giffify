@@ -1,0 +1,9 @@
+#videoView {
+    position: relative;
+}
+
+.stack {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}

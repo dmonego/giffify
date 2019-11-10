@@ -1,0 +1,15 @@
+{
+  "name": "giffify",
+  "version": "1.0.0",
+  "description": "Web interface to make gifs",
+  "main": "index.js",
+  "author": "dmonego@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^3.0.2",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
+    "human-readable-ids": "^1.0.4"
+  }
+}
