@@ -16,6 +16,24 @@
         })
     }
 
+    //Light reading on drag and drop api and all these preventDefault calls
+    // https://www.quirksmode.org/blog/archives/2009/09/the_html5_drag.html
+    document.querySelector('#drop').ondragenter = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    document.querySelector('#drop').ondragover = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    document.querySelector('#drop').ondrop = (event) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        console.log(`Time to upload ${file.name}`)
+    }
+
     //Fire on browser load
     loadVideos();
 
