@@ -22,6 +22,7 @@ app.post('/upload', (req, res) => {
     const target = `video/${req.files.video.name}`;
     console.log("Copy file to " + target);
     fs.copyFileSync(req.files.video.path, target);
+    fs.unlinkSync(req.files.video.path);
     res.send("OK");
 })
 
