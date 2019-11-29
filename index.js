@@ -18,6 +18,13 @@ app.get('/allVideos', (req, res) => {
     })
 })
 
+app.post('/upload', (req, res) => {
+    const target = `video/${req.files.video.name}`;
+    console.log("Copy file to " + target);
+    fs.copyFileSync(req.files.video.path, target);
+    res.send("OK");
+})
+
 app.post('/', (req, res) => {
     const start = req.fields.startTime;
     const duration = req.fields.duration;

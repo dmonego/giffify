@@ -1,6 +1,6 @@
 
 (() => {
-    const getVideos = (cb) => {
+    const _getVideos = (cb) => {
         fetch('/allVideos')
             .then((response) => {
             response.json().then((data) => {
@@ -9,11 +9,17 @@
         })
     }
     const loadVideos = () => {
-        getVideos((videoList) => {
+        _getVideos((videoList) => {
             const videoOptions = videoList.map((video) => `<option value="${video}">${video}</option>`);
             videoOptions.unshift("<option>Select a video...</option>");
             document.querySelector("#videoList").innerHTML = videoOptions.join('\n');
         })
+    }
+
+    const updateVideo = (videoName) => {
+        const video = document.querySelector("#video");
+        video.innerHTML = `<source src="/video/${videoName}" />`;
+        video.load();
     }
 
     //Light reading on drag and drop api and all these preventDefault calls
@@ -30,17 +36,27 @@
 
     document.querySelector('#drop').ondrop = (event) => {
         event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        console.log(`Time to upload ${file.name}`)
+        uploadFiles(event.dataTransfer.files)
+    }
+
+    const uploadFiles = (files) => {
+        const form = new FormData();
+        form.append("video", files[0], files[0].name);
+        fetch("/upload", {
+            body: form,
+            method: "POST"
+        }).then(() => {
+            loadVideos();
+            updateVideo(files[0].name);
+        })
     }
 
     //Fire on browser load
     loadVideos();
 
     document.querySelector("#videoList").onchange = (event) => {
-        const video = document.querySelector("#video");
-        video.innerHTML = `<source src="/video/${event.target.value}" />`;
-        video.load();
+        const videoName = event.target.value;
+        updateVideo(videoName);
     }
 
 })();
