@@ -8,11 +8,14 @@
             });
         })
     }
-    const loadVideos = () => {
+    const loadVideos = (cb) => {
         _getVideos((videoList) => {
             const videoOptions = videoList.map((video) => `<option value="${video}">${video}</option>`);
             videoOptions.unshift("<option>Select a video...</option>");
             document.querySelector("#videoList").innerHTML = videoOptions.join('\n');
+            if(cb) {
+                cb();
+            }
         })
     }
 
@@ -46,7 +49,9 @@
             body: form,
             method: "POST"
         }).then(() => {
-            loadVideos();
+            loadVideos(() => {
+                document.querySelector("#videoList").value = files[0].name;
+            });
             updateVideo(files[0].name);
         })
     }
