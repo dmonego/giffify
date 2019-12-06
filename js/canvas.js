@@ -1,45 +1,34 @@
 (() => {
-    const canvas = document.querySelector("#effectsCanvas");
-    const video = document.querySelector("#video");
-    
+    const canvas = document.querySelector("#effectsCanvas"),
+        video = document.querySelector("#video"),
+        STATE_CROP_BLANK = 0,
+        STATE_CROP_DRAWING = 1,
+        STATE_CROP_DONE = 2;
+    let canvasCursorLoc = {},
+        canvasState = STATE_CROP_BLANK;
+
     function clear() {
         const context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     
-    video.onloadedmetadata = () => {
-        canvas.height = video.clientHeight;
-        canvas.width = video.clientWidth;
-    }
-
-    let canvasCursorLoc = {},
-        mouseDown = false;
-
-    canvas.onmousedown = (event) => {
-        canvasCursorLoc.startX = event.offsetX;
-        canvasCursorLoc.startY = event.offsetY;
-        mouseDown = true;
-    }
-
-    canvas.onmousemove = (event) => {
-        if(mouseDown)
-        {
-            clear();
-            const context = canvas.getContext("2d");
-            context.strokeStyle = "#00FF00";
-            context.strokeRect(canvasCursorLoc.startX,
-                canvasCursorLoc.startY,
-                event.offsetX - canvasCursorLoc.startX,
-                event.offsetY - canvasCursorLoc.startY);
-        }
-    }
-
-    canvas.onmouseup = (event) => {
+    function redrawCropRect(offsetX, offsetY) {
         clear();
-        const startX = Math.min(canvasCursorLoc.startX, event.offsetX),
-            startY = Math.min(canvasCursorLoc.startY, event.offsetY),
-            width = Math.abs(event.offsetX - canvasCursorLoc.startX),
-            height = Math.abs(event.offsetY - canvasCursorLoc.startY),
+        const context = canvas.getContext("2d");
+        context.strokeStyle = "#00FF00";
+        context.strokeRect(canvasCursorLoc.startX,
+            canvasCursorLoc.startY,
+            offsetX - canvasCursorLoc.startX,
+            offsetY - canvasCursorLoc.startY);
+
+    }
+
+    function finishCropRect(offsetX, offsetY) {
+        clear();
+        const startX = Math.min(canvasCursorLoc.startX, offsetX),
+            startY = Math.min(canvasCursorLoc.startY, offsetY),
+            width = Math.abs(offsetX - canvasCursorLoc.startX),
+            height = Math.abs(offsetY - canvasCursorLoc.startY),
             context = canvas.getContext("2d")
         context.strokeStyle = "#00FF00";
         context.strokeRect(startX,
@@ -48,6 +37,37 @@
             height);
         const cropString = `${width}:${height}:${startX}:${startY}`
         document.querySelector("#cropString").innerHTML = cropString;
-        mouseDown = false;
+
     }
+
+    video.onloadedmetadata = () => {
+        canvas.height = video.clientHeight;
+        canvas.width = video.clientWidth;
+    }
+
+
+    canvas.onclick = (event) => {
+        if(canvasState == STATE_CROP_BLANK) {
+            canvasCursorLoc.startX = event.offsetX;
+            canvasCursorLoc.startY = event.offsetY;
+            canvasState = STATE_CROP_DRAWING
+        }
+        else if(canvasState == STATE_CROP_DRAWING) {
+            finishCropRect(event.offsetX, event.offsetY);
+            canvasState = STATE_CROP_DONE;
+        }
+        else if(canvasState == STATE_CROP_DONE) {
+            document.querySelector("#cropString").innerHTML = "";
+            clear();
+            canvasState = STATE_CROP_BLANK;
+        }
+    }
+
+    canvas.onmousemove = (event) => {
+        if(canvasState == STATE_CROP_DRAWING)
+        {
+            redrawCropRect(event.offsetX, event.offsetY);
+        }
+    }
+
 })()
