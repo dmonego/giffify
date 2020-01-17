@@ -7,3 +7,28 @@
     top: 0px;
     left: 0px;
 }
+
+.modal::before {
+    margin-left: 10%;
+}
+
+.modal {
+    text-align: center;
+    box-shadow: 2px 2px 5px black;
+    width: min-content;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background-color: white;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.exitButton {
+    text-align: right;
+}
+
+.downloadGif {
+    text-align: center;
+    padding: 10px;
+}
