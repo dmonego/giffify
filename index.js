@@ -30,17 +30,19 @@ app.post('/', (req, res) => {
     const start = req.fields.startTime;
     const duration = req.fields.duration;
     const video = req.fields.video;
-    const crop = req.fields.cropString 
+    const gif = `gif/${video}.gif`;
+    const crop = req.fields.cropString
         ? `--crop ${req.fields.cropString}`
         : "";
-    const cmd = `node process.js --start ${start} --duration ${duration} ${crop} --source video/${video} --output ${video}.gif`
+    const cmd = `node process.js --start ${start} --duration ${duration} ${crop} --source video/${video} --output ${gif}`
     console.log(cmd)
-    exec(cmd, () => {
-        res.send("");
-    })
+    exec(cmd, () =>{
+        res.send(gif);
+    });
 })
 
 app.use('/video', express.static('video'));
 app.use('/js', express.static('js'));
-app.use('/css', express.static('css'))
+app.use('/css', express.static('css'));
+app.use('/gif', express.static('gif'));
 app.listen(port);

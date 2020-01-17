@@ -13,16 +13,20 @@
                 <input name="duration" id="duration" placeholder="duration"/>
                 <button id="postButton">Giffify</button>
             </div>
+            <div>
+                <span>Current time: <span id="currentTime"></span></span> 
+                |
+                <span>Selected: <span id="cropString"></span></span>
+            </div>
             <div id="videoView">
                 <video id="video">
                     <source src="/video/table-runaway2.mov" />
                 </video>
                 <canvas class="stack" id="effectsCanvas" />
             </div>
-            <div>
-                <span>Current time: <span id="currentTime"></span></span> 
-                |
-                <span>Selected: <span id="cropString"></span></span>
+            <div id="modal" class="modal">
+                <a id="modalExit" class="exitButton">X</a> <br />
+                <img id="gif" class="downloadGif" />
             </div>
             <script src="js/editor.js"></script>
             <script src="js/canvas.js"></script>

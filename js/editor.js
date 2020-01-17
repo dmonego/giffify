@@ -1,5 +1,7 @@
 (() => {
   var video = document.querySelector("#video"); 
+  var modalClose = document.querySelector("#modalExit");
+  var modal = document.querySelector("#modal");
 
   document.querySelector("#playButton").onclick = () => { 
       if (video.paused) 
@@ -7,6 +9,16 @@
       else 
         video.pause(); 
     } 
+  
+  const showGif = (fileUrl) => {
+    const gifImage = document.querySelector("#gif");
+    gifImage.src = fileUrl;
+    modal.style.display = "block";
+  }
+
+  modalClose.onclick = () => {
+    modal.style.display = "none";
+  };
 
   document.querySelector("#startTime").onchange = (e) => {
     video.currentTime = e.target.value;
@@ -25,6 +37,10 @@
     fetch("/", {
       method: 'POST',
       body: form
+    }).then((response) => {
+      return response.text();
+    }).then((fileUrl) => {
+      showGif(fileUrl);
     });
   }
 
