@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const hrid = require('human-readable-ids').hri;
 const app = express();
 const port = 3000;
 const expressFormidable = require('express-formidable')
@@ -30,7 +31,7 @@ app.post('/', (req, res) => {
     const start = req.fields.startTime;
     const duration = req.fields.duration;
     const video = req.fields.video;
-    const gif = `gif/${video}.gif`;
+    const gif = `gif/${hrid.random()}.gif`;
     const crop = req.fields.cropString
         ? `--crop ${req.fields.cropString}`
         : "";
