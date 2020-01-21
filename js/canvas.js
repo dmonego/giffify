@@ -7,12 +7,12 @@
     let canvasCursorLoc = {},
         canvasState = STATE_CROP_BLANK;
 
-    function clear() {
+    const clear = () => {
         const context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
     
-    function redrawCropRect(offsetX, offsetY) {
+    const redrawCropRect = (offsetX, offsetY) => {
         clear();
         const context = canvas.getContext("2d");
         context.strokeStyle = "#00FF00";
@@ -23,7 +23,7 @@
 
     }
 
-    function finishCropRect(offsetX, offsetY) {
+    const finishCropRect = (offsetX, offsetY) => {
         clear();
         const startX = Math.min(canvasCursorLoc.startX, offsetX),
             startY = Math.min(canvasCursorLoc.startY, offsetY),
@@ -40,11 +40,12 @@
 
     }
 
-    video.onloadedmetadata = () => {
-        canvas.height = video.clientHeight;
-        canvas.width = video.clientWidth;
-    }
 
+    const clearCropState = () => {
+        document.querySelector("#cropString").innerHTML = "";
+        clear();
+        canvasState = STATE_CROP_BLANK;
+    }
 
     canvas.onclick = (event) => {
         if(canvasState == STATE_CROP_BLANK) {
@@ -57,9 +58,7 @@
             canvasState = STATE_CROP_DONE;
         }
         else if(canvasState == STATE_CROP_DONE) {
-            document.querySelector("#cropString").innerHTML = "";
-            clear();
-            canvasState = STATE_CROP_BLANK;
+            clearCropState()
         }
     }
 
@@ -70,4 +69,16 @@
         }
     }
 
+    const handleMetadata = () => {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        clearCropState();
+    }
+
+    video.onloadedmetadata = handleMetadata;
+
+    //Handle metadata for browsers with aggressive caching
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        handleMetadata();
+    }
 })()
