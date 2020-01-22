@@ -43,7 +43,9 @@ app.post('/', (req, res) => {
 })
 
 app.use('/video', express.static('video'));
-app.use('/js', express.static('js'));
-app.use('/css', express.static('css'));
+app.use('/js', express.static('static/js'));
+app.use('/css', express.static('static/css'));
 app.use('/gif', express.static('gif'));
+app.use('/img', express.static('static/img'));
+
 app.listen(port);
