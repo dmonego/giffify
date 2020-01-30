@@ -26,6 +26,10 @@
 
 .exitButton {
     text-align: right;
+    cursor: pointer;
+    display: block;
+    margin-right: 4px;
+    margin-top: 4px;
 }
 
 .downloadGif {
