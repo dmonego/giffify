@@ -20,11 +20,24 @@ app.get('/allVideos', (req, res) => {
 })
 
 app.post('/upload', (req, res) => {
-    const target = `video/${req.files.video.name}`;
-    console.log("Copy file to " + target);
-    fs.copyFileSync(req.files.video.path, target);
-    fs.unlinkSync(req.files.video.path);
-    res.send("OK");
+    let target = "",
+        filename = req.files.video.name;
+    const cleanAndFinish = () => {
+        fs.unlinkSync(req.files.video.path);
+        res.send(filename);    
+    }
+    if(req.files.video.name.endsWith(".ts")) {
+        filename = req.files.video.name.slice(0, -3) + ".mp4";
+        target = `video/${filename}`;
+        const cmd = `ffmpeg -i ${req.files.video.path} -c:v libx264 -c:a aac ${target}`;
+        console.log(cmd)
+        exec(cmd, cleanAndFinish);
+    } else {
+        const target = `video/${filename}`;
+        console.log("Copy file to " + target);
+        fs.copyFileSync(req.files.video.path, target);
+        cleanAndFinish()
+    }
 })
 
 app.post('/', (req, res) => {

@@ -48,11 +48,13 @@
         fetch("/upload", {
             body: form,
             method: "POST"
-        }).then(() => {
+        }).then((response) => {
+            return response.text();
+        }).then((filename) => {
             loadVideos(() => {
-                document.querySelector("#videoList").value = files[0].name;
+                document.querySelector("#videoList").value = filename;
             });
-            updateVideo(files[0].name);
+            updateVideo(filename);
         })
     }
 
