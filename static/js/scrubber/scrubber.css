@@ -1,0 +1,14 @@
+.handle {
+    width: 8px;
+    height: 10px;
+    border: 1px solid black;
+    background-color: red;
+    position: absolute;
+    padding: 0px;
+}
+
+.gutter {
+    width: 300px;
+    background-color: gray;
+    height: 8px;
+}
