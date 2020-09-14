@@ -27,7 +27,7 @@ class Scrubber extends HTMLElement {
     }
 
     handleHandleMouseDown(event) {
-        this.isPressed = true;
+        this.startHandlePressed = true;
         this.handle.style.backgroundColor = "green";
     }
 
@@ -35,45 +35,69 @@ class Scrubber extends HTMLElement {
         this.endHandlePressed = true;
         this.endHandle.style.backgroundColor = "green";
         if(this.endTime) {
-            const videoId = this.attributes["video-id"].value;
-            const videoElement = document.getElementById(videoId);
-            videoElement.currentTime = this.endTime;    
+            this.setVideoTime(this.endTime);
         }
     }
 
-
     handleDocumentMouseUp(event) {
-        this.isPressed = false;
-        this.endHandlePressed = false;
+        if(this.startHandlePressed) {
+            this.startHandlePressed = false;
+            this.emitStartTimeChanged();
+        }
+        if(this.endHandlePressed) {
+            this.endHandlePressed = false;
+            this.emitEndTimeChanged();
+        }
         this.handle.style.backgroundColor = "red";
         this.endHandle.style.backgroundColor = "red";
+        this.setVideoTime(this.currentTime);
+    }
 
+    emitStartTimeChanged() {
+        const startTimeChanged = new Event("startTimeChanged");
+        startTimeChanged.startTime = this.currentTime;
+        this.dispatchEvent(startTimeChanged);
+
+    }
+
+    emitEndTimeChanged() {
+        const endTimeChanged = new Event("endTimeChanged");
+        endTimeChanged.startTime = this.currentTime;
+        if(this.endTime) {
+            endTimeChanged.endTime = this.endTime;
+            endTimeChanged.duration = this.endTime - this.currentTime;
+        }
+        this.dispatchEvent(endTimeChanged);
+
+    }
+
+    setVideoTimeByRatio(ratio) {
         const videoId = this.attributes["video-id"].value;
         const videoElement = document.getElementById(videoId);
-        videoElement.currentTime = this.currentTime;
+        const selectedTime = videoElement.duration * ratio;
+        videoElement.currentTime = selectedTime;
+        return selectedTime;
+    }
+
+    setVideoTime(time) {
+        const videoId = this.attributes["video-id"].value;
+        const videoElement = document.getElementById(videoId);
+        videoElement.currentTime = time;
     }
 
     handleDocumentMouseMove(event) {
         const position = Math.max(0, Math.min(this.width, event.offsetX));
-        if(this.isPressed) {
+        if(this.startHandlePressed) {
             this.handle.style.left = position + "px";
 
             const ratio = position / this.width;
-            const videoId = this.attributes["video-id"].value;
-            const videoElement = document.getElementById(videoId);
-            const selectedTime = videoElement.duration * ratio;
-            this.currentTime = selectedTime;
-            videoElement.currentTime = selectedTime;
+            this.currentTime = this.setVideoTimeByRatio(ratio);
         }
         if(this.endHandlePressed) {
             this.endHandle.style.left = position + "px";
 
             const ratio = position / this.width;
-            const videoId = this.attributes["video-id"].value;
-            const videoElement = document.getElementById(videoId);
-            const selectedTime = videoElement.duration * ratio;
-            this.endTime = selectedTime;
-            videoElement.currentTime = selectedTime;
+            this.endTime = this.setVideoTimeByRatio(ratio);
         }
     }
 
