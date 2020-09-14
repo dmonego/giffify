@@ -1,3 +1,5 @@
+const LEFT_KEY = 37;
+const RIGHT_KEY = 39;
 
 class Scrubber extends HTMLElement {
     createDom() {
@@ -10,6 +12,7 @@ class Scrubber extends HTMLElement {
         this.handle.setAttribute("class", "handle");
         this.handle.setAttribute("id", "handle-start");
         this.handle.addEventListener("mousedown", this.handleHandleMouseDown.bind(this));
+        this.handle.addEventListener("keydown", this.handleStartHandleKeydown.bind(this));
         document.addEventListener("mouseup", this.handleDocumentMouseUp.bind(this));
         document.addEventListener("mousemove", this.handleDocumentMouseMove.bind(this));
 
@@ -17,6 +20,8 @@ class Scrubber extends HTMLElement {
         this.endHandle.setAttribute("class", "handle");
         this.endHandle.setAttribute("id", "handle-end");
         this.endHandle.style.left = this.width + "px";
+        this.endHandle.addEventListener("keydown", this.handleEndHandleKeydown.bind(this));
+        this.endHandle.addEventListener("keyup", this.handleEndHandleKeyup.bind(this));
         this.endHandle.addEventListener("mousedown", this.handleEndHandleMouseDown.bind(this));
 
         this.gutter = document.createElement("div");
@@ -24,6 +29,37 @@ class Scrubber extends HTMLElement {
         this.gutter.append(this.handle);
         this.gutter.append(this.endHandle);
         this.shadowRoot.append(this.gutter);
+    }
+
+    handleStartHandleKeydown(event) {
+        const middle = 38; // left is 37, right is 39 - this helps us make them -1 and 1
+        if(event.keyCode == LEFT_KEY || event.keyCode == RIGHT_KEY) {
+            this.startPosition += event.keyCode - middle;
+            this.handle.style.left = this.startPosition + "px";
+
+            const ratio = this.startPosition / this.width;
+            this.currentTime = this.setVideoTimeByRatio(ratio);
+            this.emitStartTimeChanged();
+        }
+    }
+
+    handleEndHandleKeydown(event) {
+        const middle = 38; // left is 37, right is 39 - this helps us make them -1 and 1
+        if(event.keyCode == LEFT_KEY || event.keyCode == RIGHT_KEY) {
+            this.endPosition += event.keyCode - middle;
+            this.endHandle.style.left = this.endPosition + "px";
+
+            const ratio = this.endPosition / this.width;
+            this.endTime = this.setVideoTimeByRatio(ratio);
+            this.emitEndTimeChanged();
+        }
+    }
+
+    handleEndHandleKeyup(event) {
+        console.log("keyup")
+        if(event.keyCode == LEFT_KEY || event.keyCode == RIGHT_KEY) {
+            this.setVideoTime(this.currentTime);
+        }
     }
 
     handleHandleMouseDown(event) {
@@ -86,14 +122,18 @@ class Scrubber extends HTMLElement {
     }
 
     handleDocumentMouseMove(event) {
-        const position = Math.max(0, Math.min(this.width, event.offsetX));
+        let position = Math.max(0, Math.min(this.width, event.offsetX));
         if(this.startHandlePressed) {
+            position = Math.min(position, this.endPosition)
+            this.startPosition = position;
             this.handle.style.left = position + "px";
 
             const ratio = position / this.width;
             this.currentTime = this.setVideoTimeByRatio(ratio);
         }
         if(this.endHandlePressed) {
+            position = Math.max(position, this.startPosition)
+            this.endPosition = position;
             this.endHandle.style.left = position + "px";
 
             const ratio = position / this.width;
@@ -105,7 +145,9 @@ class Scrubber extends HTMLElement {
         super();
         this.handleStart
         console.log('Creating Scrubber')
-        this.width = 300;
+        this.width = 500;
+        this.startPosition = 0;
+        this.endPosition = this.width;
         this.currentTime = 0;
         this.endTime = null;
         this.attachShadow({mode: 'open'});
