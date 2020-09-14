@@ -8,6 +8,7 @@ program
     .option('--output <output>', 'file name to write')
     .option('--slow')
     .option('--filmgrain')
+    .option('--outputwidth <width>', 'Width of output', parseInt)
     .option('--crop <coords>', 'Location to crop in w:h:x:y format')
 
 program.parse(process.argv);
@@ -31,6 +32,16 @@ const buildPreprocessFilter = () => {
     }
 }
 
+const buildPostProcessFilter = () => {
+    let scale = null;
+    if(program.outputwidth) {
+        scale = `scale=w=${program.outputwidth}:h=-1:flags=lanczos[x]`;
+    } else {
+        scale = `scale=w=450:h=-1:flags=lanczos[x]`;
+    }
+    return `${scale}, [x][1:v] paletteuse`;
+}
+
 const main = () => {
     const slug = hrid.random();
     //trim, crop, and apply color effects
@@ -41,7 +52,8 @@ const main = () => {
     execSync(`ffmpeg -i tmp/${slug}.mp4 -filter_complex "[0:v] palettegen" tmp/${slug}-palette.png`)
 
     //produce gif
-    execSync(`ffmpeg -i tmp/${slug}.mp4 -i tmp/${slug}-palette.png -r 18 -f gif -filter_complex "scale=w=450:h=-1:flags=lanczos[x], [x][1:v] paletteuse" ${program.output}`)
+    const postprocessFilter = buildPostProcessFilter();
+    execSync(`ffmpeg -i tmp/${slug}.mp4 -i tmp/${slug}-palette.png -r 18 -f gif -filter_complex "${postprocessFilter}" ${program.output}`)
 }
 
 main()
