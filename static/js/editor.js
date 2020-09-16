@@ -24,6 +24,14 @@
     video.currentTime = e.target.value;
   }
 
+  document.querySelector("#scrubber").addEventListener("startTimeChanged", (event) => {
+    document.querySelector("#startTime").value = event.startTime;
+  });
+
+  document.querySelector("#scrubber").addEventListener("endTimeChanged", (event) => {
+    document.querySelector("#duration").value = event.duration;
+  });
+
   document.querySelector("#postButton").onclick = () => {
     const startTime = document.querySelector("#startTime").value;
     const duration = document.querySelector("#duration").value;

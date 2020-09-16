@@ -1,0 +1,17 @@
+.handle {
+    border-radius: 4px 4px 0px 0px;
+    width: 8px;
+    height: 18px;
+    border: 1px solid black;
+    background-color: red;
+    position: absolute;
+    padding: 0px;
+}
+
+.gutter {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    width: 500px;
+    background-color: gray;
+    height: 8px;
+}

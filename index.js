@@ -61,4 +61,5 @@ app.use('/css', express.static('static/css'));
 app.use('/gif', express.static('gif'));
 app.use('/img', express.static('static/img'));
 
+console.log(`Listening on port ${port}`);
 app.listen(port);

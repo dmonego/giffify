@@ -2,6 +2,8 @@
 <html>
     <head>
         <link rel="stylesheet" href="/css/styles.css" />
+        <script src="js/scrubber/scrubber.js"></script>
+        <title>Giffify</title>
     </head>
     <body>
         <div id="drop">
@@ -13,6 +15,7 @@
                 <input name="duration" id="duration" placeholder="duration"/>
                 <button id="postButton">Giffify</button>
             </div>
+            <video-scrubber id="scrubber" video-id="video"> </video-scrubber>
             <div>
                 <span>Current time: <span id="currentTime"></span></span> 
                 |
