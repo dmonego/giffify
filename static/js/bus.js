@@ -43,46 +43,47 @@ class BusEvent extends Event  {
     }
 }
 
-const Bus = function() {
-    this.listeners = {};
-    this.store = {}
-};
+class Bus {
+    constructor(store) {
+        this.listeners = {};
+        this.store = {}
+    };
 
-Bus.prototype.listeners = null;
-Bus.prototype.addEventListener = function(type, callback) {
-    if (!(type in this.listeners)) {
-        this.listeners[type] = [];
-    }
-    this.listeners[type].push(callback);
-};
+    addEventListener(type, callback) {
+        if (!(type in this.listeners)) {
+            this.listeners[type] = [];
+        }
+        this.listeners[type].push(callback);
+    };
 
-Bus.prototype.removeEventListener = function(type, callback) {
-    if (!(type in this.listeners)) {
-        return;
-    }
-    var stack = this.listeners[type];
-    for (var i = 0, l = stack.length; i < l; i++) {
-        if (stack[i] === callback){
-            stack.splice(i, 1);
+    removeEventListener(type, callback) {
+        if (!(type in this.listeners)) {
             return;
         }
-    }
-};
+        var stack = this.listeners[type];
+        for (var i = 0, l = stack.length; i < l; i++) {
+            if (stack[i] === callback){
+                stack.splice(i, 1);
+                return;
+            }
+        }
+    };
 
-Bus.prototype.updateState = function(data) {
-    this.store = deepMerge(this.store, data);
+    updateState(data) {
+        this.store = deepMerge(this.store, data);
+    }
+
+    dispatchEvent(eventName, data) {
+        this.updateState(data);
+        const event = new BusEvent(eventName, this.store);
+        if (!(event.type in this.listeners)) {
+            return true;
+        }
+        var stack = this.listeners[event.type].slice();
+    
+        for (var i = 0, l = stack.length; i < l; i++) {
+            stack[i].call(this, event);
+        }
+        return !event.defaultPrevented;
+    };   
 }
-
-Bus.prototype.dispatchEvent = function(eventName, data) {
-    this.updateState(data);
-    const event = new BusEvent(eventName, this.store);
-    if (!(event.type in this.listeners)) {
-        return true;
-    }
-    var stack = this.listeners[event.type].slice();
-
-    for (var i = 0, l = stack.length; i < l; i++) {
-        stack[i].call(this, event);
-    }
-    return !event.defaultPrevented;
-};
