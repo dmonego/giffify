@@ -2,12 +2,13 @@
 (() => {
     const _getVideos = (cb) => {
         fetch('/allVideos')
-            .then((response) => {
+        .then((response) => {
             response.json().then((data) => {
                 cb(data)
             });
-        })
+       });
     }
+    
     const loadVideos = (cb) => {
         _getVideos((videoList) => {
             const videoOptions = videoList.map((video) => `<option value="${video}">${video}</option>`);
@@ -63,6 +64,7 @@
 
     document.querySelector("#videoList").onchange = (event) => {
         const videoName = event.target.value;
+        document.bus.dispatchEvent("changeVideo", {video: videoName});
         updateVideo(videoName);
     }
 

@@ -36,6 +36,7 @@
             width,
             height);
         const cropString = `${width}:${height}:${startX}:${startY}`
+        document.bus.dispatchEvent("setCrop", {"crop": cropString});
         document.querySelector("#cropString").innerHTML = cropString;
 
     }
