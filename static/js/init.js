@@ -1,1 +1,1 @@
-document.bus = new Bus();
+document.bus = new Bus({video: "table-runaway2.mov"});

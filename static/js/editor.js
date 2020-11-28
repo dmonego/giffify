@@ -20,10 +20,6 @@
     modal.style.display = "none";
   };
 
-  document.querySelector("#startTime").onchange = (e) => {
-    video.currentTime = e.target.value;
-  }
-
   document.querySelector("#scrubber").addEventListener("startTimeChanged", (event) => {
     document.bus.dispatchEvent("setStartTime", {"time": { "startTime": event.startTime}});
   });
