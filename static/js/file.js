@@ -51,7 +51,6 @@
 
     document.querySelector('#drop').ondrop = (event) => {
         event.preventDefault();
-        console.log("Loading files")
         uploadFiles(event.dataTransfer.files)
     }
 
