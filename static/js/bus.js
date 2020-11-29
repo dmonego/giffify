@@ -37,8 +37,9 @@ Real simple bus. Shamelessly stolen fron the MDN EventTarget reference.
 https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
 */
 class BusEvent extends Event  {
-    constructor(eventName, state) {
+    constructor(eventName, state, prevState) {
         super(eventName);
+        this.prevState = prevState;
         this.state = state;
     }
 }
@@ -46,7 +47,8 @@ class BusEvent extends Event  {
 class Bus {
     constructor(store) {
         this.listeners = {};
-        this.store = {}
+        this.store = store || {};
+        this.prevStore = store || {};
     };
 
     addEventListener(type, callback) {
@@ -70,12 +72,13 @@ class Bus {
     };
 
     updateState(data) {
+        this.prevStore = this.store;
         this.store = deepMerge(this.store, data);
     }
 
     dispatchEvent(eventName, data) {
         this.updateState(data);
-        const event = new BusEvent(eventName, this.store);
+        const event = new BusEvent(eventName, this.store, this.prevStore);
         if (!(event.type in this.listeners)) {
             return true;
         }

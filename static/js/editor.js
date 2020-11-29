@@ -40,7 +40,9 @@
     const form = new FormData();
     form.append('startTime', startTime);
     form.append('duration', duration);
-    form.append("cropString", cropString);
+    if(cropString){
+      form.append("cropString", cropString);
+    }
     form.append('video', video);
     fetch("/", {
       method: 'POST',
